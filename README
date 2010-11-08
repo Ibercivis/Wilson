@@ -1,0 +1,26 @@
+PRIMOS DE WILSON:
+
+Un número primo de Wilson o número de Wilson, llamado así 
+en honor al matemático John Wilson, es un tipo de primo p 
+tal que p² divide a (p − 1)! + 1, donde «!» denota la función 
+factorial. Tiene cierta similitud con el teorema de Wilson, 
+el cual cita que cada número primo p divide a (p − 1)! + 1.
+
+
+Aunque se ha conjeturizado que los existen infinitos números
+de Wilson, tan solo se han encontrado el 5, el 13 y el 563.
+También se ha demostrado que si existen mas números de Wilson,
+estos deben ser mayores que 5x10^8.
+
+El programa wilson.c calcula si un número es de Wilson o no.
+
+Para compilar: (es necesaria la librería libgmp)
+	make
+
+Para ejecutar el programa:
+
+./wilson numero_primo.
+
+Puede ser interesante comprobar la memoria usada durante la ejecución
+
+top -d1 -b | grep wilson

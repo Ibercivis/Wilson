@@ -1,0 +1,4 @@
+mar nov 16 20:05:48 CET 2010 Francisco Sanz <frasanz@bifi.es>
+	* Se define un producto módulo que ahorra tiempo y memoria. No es necesaria
+	librería gmp.
+

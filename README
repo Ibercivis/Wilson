@@ -14,13 +14,13 @@ estos deben ser mayores que 5x10^8.
 
 El programa wilson.c calcula si un número es de Wilson o no.
 
-Para compilar: (es necesaria la librería libgmp)
+Para compilar:
 	make
 
 Para ejecutar el programa:
 
-./wilson numero_primo.
+./wilson
 
-Puede ser interesante comprobar la memoria usada durante la ejecución
+El programa lee el fichero numbers, comprobando si cada uno 
+de los números que contiene este fichero es de wilson.
 
-top -d1 -b | grep wilson

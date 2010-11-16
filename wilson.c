@@ -5,8 +5,8 @@
  *
  *    Description:  Búsqueda de números de Wilson.
  *
- *        Version:  1.0
- *        Created:  08/11/10 15:18:39
+ *        Version:  2.0
+ *        Created:  15/11/10 17:19:28
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -18,72 +18,90 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <gmp.h>
+#include "wilson.h"
+#define LINESZ 256
 
-/* Devuelve 1 si es primo de Wilson */
-int main(int argc, char * argv[])
+int main()
 {
-	
-	const char *uso=
-		"\nUso: %s [Número primo]\n\n";
-	if((argc>1) && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))) {
-		printf (uso, argv[0]);
-		exit(1);
-	}
-
-	/* Definimos e inicializamos */
-	unsigned long primo;
-
-	mpz_t p;
-	mpz_t primo_cuadrado;
-	mpz_t n_grande;
-
-	mpz_init(p);
-	mpz_init(primo_cuadrado);
-	mpz_init(n_grande);
-
-	/* Escaneamos el número elegido */
-	if(argc>1)
-		primo=atol(argv[1]);
-	else
-		primo=563;
+	FILE * fi;
+	FILE * fo;
+	u64 primo;
+	u64 compr;
+	representacion mu;
+	char buff[LINESZ];
+	char buff2[LINESZ];
+	int i;
 
 
-	/* Miramos en primer lugar si es primo */
-	mpz_set_ui(p,primo);
-	if(!mpz_probab_prime_p(p,10))
+	/* Abrimos ficheros de entrada y de salida */
+	fi=fopen("numbers","r");
+	if(fi==NULL)
 	{
-		printf("El número %d ni siquiera es primo.\n",primo);
-		printf("Probamos primer primo que encontremos a partir de %d.\n",primo);
-		mpz_nextprime(p,p);
-		primo=mpz_get_ui(p);
+		printf("Error en la apertura de numbers\n");
+		exit(-1);
 	}
-	
-	/* Comenzamos */
-	printf("\nAnálisis para el número %d\n",primo);
+	fo=fopen("output","a+");
+	if(fo==NULL)
+	{
+		printf("Error en la apertura de output\n");
+		exit(-1);
+	}
 
-	/* Calculamos el factorial */
-	printf("\tcálculo del factorial...\n");
-	mpz_fac_ui(n_grande,primo-1);
+	/* Nos vamos al principio de fo */
+	fseek(fo,0L, SEEK_SET);
 
-	/* Le sumamos 1 al resultado */
-	mpz_add_ui(n_grande,n_grande,1);
 
-	/* Calculamos el cuadrado del primo */
-	mpz_ui_pow_ui(primo_cuadrado,primo,2);
-
-	/* Un primo p es primo de Wilson si p^2 divide a (p-1)!+1 */
-	/* mpz_divisible_p devuelve non-zero si n_grande es divisible por primo_cuadrado */
-	printf("\tcomprobando divisibilidad...\n");
-	if(mpz_divisible_p(n_grande,primo_cuadrado))
-		printf("%d es número de Wilson.\n",primo);
-	else
-		printf("%d no es número de Wilson.\n",primo);
-
-	/* Limpiamos memoria */
-	mpz_clear(n_grande);
-	mpz_clear(primo_cuadrado);
-	mpz_clear(p);
-
+	/* Leemos el fichero para ver si ya hemos realizado algún primo de la lista */
+	while (fgets (buff, LINESZ, fi)) {
+		if(fgets(buff2, LINESZ,fo))
+		{
+			/* Hemos podido leer la línea del fichero de salida */
+			sscanf(buff,"%lld",&primo);
+			sscanf(buff2,"%lld",&compr);
+			if(primo!=compr)
+			{
+				printf("Ambos deberían coincidir\n");
+				exit(-555);
+			}
+		}
+		else
+		{
+			/*No hemos podido leer la línea del fichero de salida, hacemos los cálculos */
+			sscanf(buff,"%lld",&primo);
+			printf("Haciendo cálculos para el primo %lld\n", primo);
+			mu=get_representacion(1,primo);
+			for(i=2;i<=primo-1;i++)
+			{
+				mu=mul(mu,get_representacion(i,primo),primo);
+			}
+			/* Escribimos en el fichero de salida */
+			/* El primo, su cuadrado y el módulo */
+			/* Si es número Wilson, el módulo vale 0 */
+			fprintf(fo,"%lld %lld %lld \n",primo, primo*primo, (mu.r1*primo+mu.r2+1)%(primo*primo));
+		}
+	}
+	fclose(fi);
+	fclose(fo);
 	return 0;
 }
+
+representacion get_representacion(u64 a, u64 p)
+{
+	representacion re;
+	re.r1=a/p;
+	re.r2=a%p;
+	return re;
+}
+
+representacion mul(representacion a, representacion b, u64 p)
+{
+	representacion mul;
+	mul.r2=(a.r2*b.r2)%p;
+	mul.r1=(a.r2*b.r2)/p;
+	mul.r1=(mul.r1+a.r1*b.r2+b.r1*a.r2)%p;
+	return mul;
+}
+
+
+
+

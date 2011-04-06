@@ -1,5 +1,6 @@
 PRIMOS DE WILSON:
 
+
 Un número primo de Wilson o número de Wilson, llamado así 
 en honor al matemático John Wilson, es un tipo de primo p 
 tal que p² divide a (p − 1)! + 1, donde «!» denota la función 
@@ -50,6 +51,4 @@ m_2 = (a_2*b_2)%p
 m_1 = ((a_2*b_2)/p + a_1*p*b_2 + b_1*p*a_2)%p
 
 Check the code to understand it better.
-
-
 

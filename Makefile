@@ -1,12 +1,13 @@
 DEFS	= -03
 CC    = gcc
 APP   = wilson
-LIBS  = -lgmp
 
 Default = $(APP)
 
 $(APP): $(APP).c
-	$(CC) $(LIBS) $(APP).c -o $(APP)
+	$(CC) $(APP).c -o $(APP)
+primos: primos.c
+	$(CC) -static $(LIBS) primos.c -o primos
 clean:
 	rm -f *.o $(APP)
 
